@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secundair Portaal</title>
+    <style>
+        :root {
+            --blue: #3a9ad9; --orange: #e67e22; --green: #2ecc71; --purple: #9b59b6; --red: #e74c3c; --gold: #f1c40f; --dark: #34495e;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; padding-bottom: 120px; 
+        }
+
+        .page { 
+            display: none; width: 90%; max-width: 1000px; text-align: center; 
+            background: white; padding: 4rem 2rem; border-radius: 60px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03); position: relative; margin-top: 40px;
+            min-height: 550px;
+        }
+
+        .page.active { display: block; }
+
+        h1 { font-size: 3.5rem; color: var(--dark); text-transform: uppercase; margin-bottom: 30px; font-weight: 800; }
+        
+        .grid-sub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+        
+        .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px; margin: 30px auto; }
+
+        .clickable-card { 
+            background: white; padding: 30px 15px; border-radius: 20px; border: 1px solid #e0e0e0; 
+            font-weight: 800; color: var(--dark); cursor: pointer; text-align: center; transition: 0.2s;
+            font-size: 1.2rem; text-decoration: none; display: block;
+        }
+        .clickable-card:hover { border-color: #bbb; background: #fafafa; transform: translateY(-2px); }
+
+        /* Gedetailleerde Planning Lijst */
+        .time-list {
+            text-align: left; background: #fdfdfd; padding: 25px; border-radius: 20px;
+            margin-top: 15px; border: 1px solid #eee; color: #444; font-weight: 500; font-size: 1.05rem;
+            line-height: 1.6; display: none;
+        }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .row:last-child { border-bottom: none; }
+        .time-label { color: var(--blue); font-weight: 800; min-width: 130px; }
+        .activity-label { flex-grow: 1; font-weight: 600; }
+        .pause-row { color: var(--green); background: #f0fff4; border-radius: 12px; padding: 10px 15px; margin: 5px -10px; }
+
+        .uitleg-box { display: none; background: #f9f9f9; padding: 15px; border-radius: 15px; margin-top: 10px; border: 1px dashed #ccc; text-align: left; }
+
+        .teacher-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .teacher-column { background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 30px; }
+
+        .summary-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; text-align: left; margin-top: 30px; }
+        .summary-card { background: #fffdf0; border: 1px solid var(--gold); padding: 25px; border-radius: 30px; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.1); }
+        .summary-card h3 { margin-top: 0; color: var(--dark); border-bottom: 2px solid var(--gold); padding-bottom: 8px; font-size: 1.3rem; }
+        .summary-card ul { padding-left: 20px; margin: 15px 0; }
+        .summary-card li { margin-bottom: 8px; font-size: 1rem; color: #555; }
+
+        .bottom-nav { 
+            position: fixed; bottom: 30px; display: flex; gap: 12px; 
+            background: white; padding: 15px 25px; border-radius: 100px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 1000; align-items: center;
+        }
+        .nav-dot { width: 20px; height: 20px; border-radius: 50%; border: none; cursor: pointer; background: #ddd; color: transparent; transition: 0.3s; }
+        .nav-dot.active { width: 85px; border-radius: 12px; color: white; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
+
+        .back-link { position: absolute; top: 40px; left: 50px; color: var(--dark); font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
+
+        .bg-blue { background: var(--blue); } .bg-orange { background: var(--orange); } .bg-green { background: var(--green); } 
+        .bg-purple { background: var(--purple); } .bg-red { background: var(--red); } .bg-gold { background: var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="page active">
+        <h1>SECUNDAIR</h1>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 850px; margin: 0 auto;">
+            <button class="clickable-card bg-blue" style="color:white; border:none;" onclick="showPage('page-vakken')">Vakken</button>
+            <button class="clickable-card bg-orange" style="color:white; border:none;" onclick="showPage('page-projecten')">Projecten</button>
+            <button class="clickable-card bg-green" style="color:white; border:none;" onclick="showPage('page-planning')">Planning</button>
+            <button class="clickable-card bg-purple" style="color:white; border:none;" onclick="showPage('page-resources')">Resources</button>
+            <button class="clickable-card bg-red" style="color:white; border:none;" onclick="showPage('page-leerkrachten')">Meneer/Mevr</button>
+            <button class="clickable-card bg-gold" style="color:white; border:none; grid-column: span 3;" onclick="showPage('page-summary')">✨ Samengevat</button>
+        </div>
+    </div>
+
+    <div id="page-vakken" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>VAKKEN</h1>
+        <div class="grid-sub">
+            <div class="clickable-card" onclick="toggleUitleg('v1')">Wiskunde<div id="v1" class="uitleg-box">Cijfers en formules.</div></div>
+            <div class="clickable-card" onclick="toggleUitleg('v2')">Frans<div id="v2" class="uitleg-box">Vocabulaire en grammatica.</div></div>
+            <div class="clickable-card" onclick="toggleUitleg('v3')">Engels<div id="v3" class="uitleg-box">Talking and writing.</div></div>
+            <div class="clickable-card" onclick="toggleUitleg('v4')">Wetenschappen<div id="v4" class="uitleg-box">Proefjes en natuur.</div></div>
+            <div class="clickable-card" onclick="toggleUitleg('v5')">Geschiedenis<div id="v5" class="uitleg-box">Tijdlijnen van vroeger.</div></div>
+            <div class="clickable-card" onclick="toggleUitleg('v6')">L.O.<div id="v6" class="uitleg-box">Conditie en sport.</div></div>
+        </div>
+    </div>
+
+    <div id="page-projecten" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>PROJECTEN</h1>
+        <p style="font-size: 1.5rem; color: #444; max-width: 800px; margin: 40px auto; line-height: 1.6;">
+            Samenwerken aan grote opdrachten die over verschillende vakken gaan. Hier leer je hoe je van een klein idee een groot resultaat maakt.
+        </p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
+        <p style="font-weight: 800; color: var(--dark);">Meer weten?<br><span style="font-weight: 400; color: #666;">Dan moet je in de secundair zitten.</span></p>
+    </div>
+
+    <div id="page-planning" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>DAGPLANNING</h1>
+        <div style="display: flex; flex-direction: column; gap: 15px; max-width: 750px; margin: 30px auto;">
+            <div class="clickable-card" onclick="toggleUitleg('plan-ma')">Maandag - Dinsdag - Donderdag - Vrijdag
+                <div id="plan-ma" class="time-list">
+                    <div class="row"><span class="time-label">08:30 - 09:20</span><span class="activity-label">Lesuur 1</span></div>
+                    <div class="row"><span class="time-label">09:20 - 10:10</span><span class="activity-label">Lesuur 2</span></div>
+                    <div class="row pause-row"><span class="time-label">10:10 - 10:30</span><span class="activity-label">☕ Ochtendpauze</span></div>
+                    <div class="row"><span class="time-label">10:30 - 11:20</span><span class="activity-label">Lesuur 3</span></div>
+                    <div class="row"><span class="time-label">11:20 - 12:10</span><span class="activity-label">Lesuur 4</span></div>
+                    <div class="row pause-row"><span class="time-label">12:10 - 13:00</span><span class="activity-label">🍴 Middagpauze</span></div>
+                    <div class="row"><span class="time-label">13:00 - 13:50</span><span class="activity-label">Lesuur 5</span></div>
+                    <div class="row"><span class="time-label">13:50 - 14:40</span><span class="activity-label">Lesuur 6</span></div>
+                    <div class="row pause-row"><span class="time-label">14:40 - 14:55</span><span class="activity-label">⚽ Namiddagpauze</span></div>
+                    <div class="row"><span class="time-label">14:55 - 15:35</span><span class="activity-label">Lesuur 7</span></div>
+                </div>
+            </div>
+            <div class="clickable-card" onclick="toggleUitleg('plan-wo')">Woensdag
+                <div id="plan-wo" class="time-list">
+                    <div class="row"><span class="time-label">08:30 - 09:20</span><span class="activity-label">Lesuur 1</span></div>
+                    <div class="row"><span class="time-label">09:20 - 10:10</span><span class="activity-label">Lesuur 2</span></div>
+                    <div class="row pause-row"><span class="time-label">10:10 - 10:30</span><span class="activity-label">☕ Pauze</span></div>
+                    <div class="row"><span class="time-label">10:30 - 11:20</span><span class="activity-label">Lesuur 3</span></div>
+                    <div class="row"><span class="time-label">11:20 - 12:05</span><span class="activity-label">Lesuur 4</span></div>
+                    <div class="row"><span class="time-label">12:05</span><span class="activity-label">🏠 Einde Schooldag</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-resources" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>RESOURCES</h1>
+        <div class="resource-grid">
+            <div class="clickable-card" onclick="window.open('https://www.smartschool.be', '_blank')">Smartschool</div>
+            <div class="clickable-card" onclick="window.open('https://www.aanmelden.school/', '_blank')">Aanmelden School</div>
+            <div class="clickable-card" onclick="window.open('https://www.bingel.be', '_blank')">Bingel</div>
+            <div class="clickable-card" onclick="window.open('https://scoodleplay.plantyn.com/', '_blank')">Scoodle Play</div>
+        </div>
+    </div>
+
+    <div id="page-leerkrachten" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>TEAM</h1>
+        <div class="teacher-container">
+            <div class="teacher-column">
+                <h2 style="color: var(--blue);">👨‍🏫 Meneeren</h2>
+                <div class="clickable-card">Dhr. Janssens</div>
+                <div class="clickable-card">Dhr. Peeters</div>
+                <div class="clickable-card" style="border-style: dotted; color: #ccc;">...</div>
+            </div>
+            <div class="teacher-column">
+                <h2 style="color: var(--purple);">👩‍🏫 De Mevrouwen</h2>
+                <div class="clickable-card">Mevr. Mertens</div>
+                <div class="clickable-card">Mevr. Willems</div>
+                <div class="clickable-card" style="border-style: dotted; color: #ccc;">...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-summary" class="page">
+        <div class="back-link" onclick="showPage('home')">← TERUG</div>
+        <h1>✨ SAMENGEVAT</h1>
+        <div class="summary-dashboard">
+            <div class="summary-card">
+                <h3>🕒 De Belangrijkste Uren</h3>
+                <ul>
+                    <li><b>Start:</b> Elke dag stipt om 08:30.</li>
+                    <li><b>Pauzes:</b> Om 10:10, 12:10 en 14:40.</li>
+                    <li><b>Woensdag:</b> Gedaan om 12:05.</li>
+                    <li><b>Andere dagen:</b> Gedaan om 15:35.</li>
+                </ul>
+            </div>
+            <div class="summary-card">
+                <h3>💻 Digitale Links</h3>
+                <ul>
+                    <li><b>Bingel:</b> Voor je online oefeningen.</li>
+                    <li><b>Scoodle:</b> Voor digitale handboeken.</li>
+                    <li><b>Smartschool:</b> Voor al je berichten.</li>
+                    <li><b>Aanmelden:</b> Voor je officiële documenten.</li>
+                </ul>
+            </div>
+            <div class="summary-card">
+                <h3>📚 Jouw Vakken</h3>
+                <ul>
+                    <li>6 verschillende hoofdvakken.</li>
+                    <li>Projecten over alle vakken heen.</li>
+                    <li>Focus op zelfstandig plannen.</li>
+                    <li>Ondersteuning door vakleerkrachten.</li>
+                </ul>
+            </div>
+            <div class="summary-card">
+                <h3>💡 Dagelijkse Checklist</h3>
+                <ul>
+                    <li>Is je laptop opgeladen?</li>
+                    <li>Heb je je boeken bij voor morgen?</li>
+                    <li>Check Smartschool voor nieuwe taken.</li>
+                    <li>Vergeet je lunch niet voor de middag!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-dot bg-blue" id="d-vakken" onclick="showPage('page-vakken')">VAKKEN</button>
+        <button class="nav-dot bg-orange" id="d-projecten" onclick="showPage('page-projecten')">PROJ</button>
+        <button class="nav-dot bg-green" id="d-planning" onclick="showPage('page-planning')">PLAN</button>
+        <button class="nav-dot bg-purple" id="d-resources" onclick="showPage('page-resources')">RES</button>
+        <button class="nav-dot bg-red" id="d-leerkrachten" onclick="showPage('page-leerkrachten')">TEAM</button>
+        <button class="nav-dot bg-gold" id="d-summary" onclick="showPage('page-summary')">ALL</button>
+    </div>
+
+    <script>
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+            const dotMap = {'page-vakken':'d-vakken','page-projecten':'d-projecten','page-planning':'d-planning','page-resources':'d-resources','page-leerkrachten':'d-leerkrachten','page-summary':'d-summary'};
+            if(dotMap[id]) document.getElementById(dotMap[id]).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function toggleUitleg(id) {
+            const el = document.getElementById(id);
+            const isVisible = el.style.display === 'block';
+            el.style.display = isVisible ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
